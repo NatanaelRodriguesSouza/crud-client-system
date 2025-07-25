@@ -22,12 +22,26 @@ public class ClientService {
 		Page<Client> list = repository.findAll(pageable);
 		return  list.map(x -> new ClientDTO(x));
 	}
-	
 	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id) {
 		Optional<Client> result = repository.findById(id);
 		Client client = result.get();
 		ClientDTO dto = new ClientDTO(client);
 		return dto;
+	}
+	@Transactional(readOnly = true)
+	public ClientDTO insert(ClientDTO dto) {
+		Client client = new Client();
+		copyDtoToEntity(dto, client);
+		return new ClientDTO(client);
+	}
+	
+	private void copyDtoToEntity(ClientDTO dto, Client client) {
+		client.setBirthDate(dto.getBirthDate());
+		client.setChildren(dto.getChildren());
+		client.setCpf(dto.getCpf());
+		client.setIncome(dto.getIncome());
+		client.setName(dto.getName());
+		client = repository.save(client);
 	}
 }
