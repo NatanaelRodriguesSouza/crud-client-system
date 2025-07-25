@@ -3,6 +3,8 @@ package crud_client_system.Demo.Controllers;
 
 
 import java.net.URI;
+import crud_client_system.Demo.repository.ClientRepository;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,7 +25,7 @@ import crud_client_system.Demo.Services.ClientService;
 import crud_client_system.Demo.entities.Client;
 
 @RestController
-@RequestMapping(value = "/client")
+@RequestMapping(value = "/clients")
 public class ClientController {
 	@Autowired
 	private ClientService service;
@@ -32,20 +34,19 @@ public class ClientController {
 		Page<ClientDTO> dto = service.findAll(pegeable);
 		return ResponseEntity.ok(dto);
 	}
-	
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ClientDTO> findById(@PathVariable long id){
 		ClientDTO dto = service.findById(id);
 		return ResponseEntity.ok(dto);
 	}
 	@PostMapping
-	public ResponseEntity<ClientDTO> insert(@RequestBody ClientDTO dto){
+	public ResponseEntity<ClientDTO> insert(@Valid @RequestBody ClientDTO dto){
 		dto = service.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
 		return ResponseEntity.created(uri).body(dto);
 	}
 	@PutMapping(value = "/{id}")
-	public ResponseEntity<ClientDTO> update(@PathVariable long id,@RequestBody ClientDTO dto){
+	public ResponseEntity<ClientDTO> update(@PathVariable long id,@Valid @RequestBody ClientDTO dto){
 		dto = service.update(id, dto);
 		return ResponseEntity.ok(dto);
 	}

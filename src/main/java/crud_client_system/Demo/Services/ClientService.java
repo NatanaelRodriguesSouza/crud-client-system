@@ -11,8 +11,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import crud_client_system.Demo.DTO.ClientDTO;
+import crud_client_system.Demo.Services.exceptions.ResourceNotFoundException;
 import crud_client_system.Demo.entities.Client;
 import crud_client_system.Demo.repository.ClientRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ClientService {
@@ -26,7 +28,7 @@ public class ClientService {
 	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id) {
 		Optional<Client> result = repository.findById(id);
-		Client client = result.get();
+		Client client = result.orElseThrow(()-> new ResourceNotFoundException("Cliente não encontrado"));
 		ClientDTO dto = new ClientDTO(client);
 		return dto;
 	}
@@ -38,10 +40,15 @@ public class ClientService {
 	}
 	@Transactional
 	public ClientDTO update(Long id, ClientDTO dto) {
+		try {
 		Client client = repository.getReferenceById(id);
 		copyDtoToEntity(dto, client);
 		client = repository.save(client);
 		return new ClientDTO(client);
+		}
+		catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Cliente não encontrado");
+		}
 	}
 	private void copyDtoToEntity(ClientDTO dto, Client client) {
 		client.setBirthDate(dto.getBirthDate());
@@ -53,6 +60,9 @@ public class ClientService {
 	}
 	@Transactional(propagation = Propagation.SUPPORTS)
 	public void delete(Long id) {
+		if(!repository.existsById(id)) {
+			throw new ResourceNotFoundException("Cliente não encontrado");
+		}
 		repository.deleteById(id);
 	}
 }

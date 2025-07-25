@@ -6,13 +6,19 @@ import crud_client_system.Demo.entities.Client;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 
 public class ClientDTO {
 
 	private long id;
+	@NotBlank(message = "O nome não pode estar em branco")
+	@Size(min = 3, max = 80, message = "O nome precisa ter entre 3 e 80 caracteres")
 	private String name;
 	private String cpf;
 	private Double income;
+	@PastOrPresent(message = "A data de nascimento não pode ser futura")
 	private Date birthDate;
 	private Integer children;
 	public ClientDTO() {}
