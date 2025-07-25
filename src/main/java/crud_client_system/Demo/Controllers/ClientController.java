@@ -1,6 +1,10 @@
 package crud_client_system.Demo.Controllers;
 
+
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +20,11 @@ import crud_client_system.Demo.entities.Client;
 public class ClientController {
 	@Autowired
 	private ClientService service;
+	@GetMapping
+	public ResponseEntity<Page<ClientDTO>> findAll(Pageable pegeable){
+		Page<ClientDTO> dto = service.findAll(pegeable);
+		return ResponseEntity.ok(dto);
+	}
 	
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ClientDTO> findById(@PathVariable long id){
